@@ -802,14 +802,24 @@ async def error_handle(update: Update, context: CallbackContext) -> None:
         )
 
         # split text into multiple messages due to 4096 character limit
+        # Determine the chat_id safely
+    chat_id = None
+    if hasattr(update, "effective_chat") and update.effective_chat is not None:
+        chat_id = update.effective_chat.id
+    elif hasattr(update, "message") and update.message is not None:
+        chat_id = update.message.chat_id
+    elif hasattr(update, "callback_query") and update.callback_query is not None:
+        chat_id = update.callback_query.message.chat_id
+
+    if chat_id:
         for message_chunk in split_text_into_chunks(message, 4096):
             try:
-                await context.bot.send_message(update.effective_chat.id, message_chunk, parse_mode=ParseMode.HTML)
+                await context.bot.send_message(chat_id, message_chunk, parse_mode=ParseMode.HTML)
             except telegram.error.BadRequest:
-                # answer has invalid characters, so we send it without parse_mode
-                await context.bot.send_message(update.effective_chat.id, message_chunk)
-    except:
-        await context.bot.send_message(update.effective_chat.id, "Some error in error handler")
+                await context.bot.send_message(chat_id, message_chunk)
+    else:
+        logger.error("Unable to determine chat_id in error handler.")
+
 
 async def post_init(application: Application):
     await application.bot.set_my_commands([
