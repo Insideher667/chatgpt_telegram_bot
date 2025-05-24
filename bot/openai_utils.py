@@ -5,7 +5,7 @@ import logging
 
 import tiktoken
 import openai
-
+import database as db
 
 # setup openai
 openai.api_key = config.openai_api_key
