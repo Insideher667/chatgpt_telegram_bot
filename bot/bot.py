@@ -25,6 +25,21 @@ from telegram.ext import (
     AIORateLimiter,
     filters
 )
+
+from telegram.ext import CommandHandler
+
+async def set_gender(update, context):
+    user_id = update.message.from_user.id
+    if len(context.args) != 1 or context.args[0].lower() not in ['male', 'female']:
+        await update.message.reply_text("Please specify your preferred assistant gender: /gender male or /gender female")
+        return
+
+    gender = context.args[0].lower()
+    db.set_user_attribute(user_id, "gender", gender)
+    await update.message.reply_text(f"Got it. I'll talk to you as a {'man' if gender == 'male' else 'woman'} now 😘")
+
+application.add_handler(CommandHandler("gender", set_gender))
+
 from telegram.constants import ParseMode, ChatAction
 
 import config
