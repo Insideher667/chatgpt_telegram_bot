@@ -906,20 +906,23 @@ def run_bot():
     application.add_error_handler(error_handler)
     application.run_polling()
 
-if __name__ == "__main__":
-    import threading
+import asyncio
+import http.server
+import socketserver
+import os
 
-    # Avvia il bot in un thread separato
-    threading.Thread(target=run_bot).start()
-
-    # Dummy HTTP server per Render
-    import http.server
-    import socketserver
-    import os
-
+async def start_http_server():
     PORT = int(os.environ.get("PORT", 10000))
     Handler = http.server.SimpleHTTPRequestHandler
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
         print("Serving dummy HTTP on port", PORT)
         httpd.serve_forever()
 
+async def main():
+    await asyncio.gather(
+        run_bot(),            # avvia il bot Telegram
+        start_http_server()   # avvia il server dummy HTTP
+    )
+
+if __name__ == "__main__":
+    asyncio.run(main())
