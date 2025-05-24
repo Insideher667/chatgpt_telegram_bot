@@ -19,6 +19,8 @@ RUN pip3 install -r /tmp/requirements.txt && rm -r /tmp/requirements.txt
 COPY . /code
 WORKDIR /code
 
-CMD ["python3", "app.py"]
+CMD ["python3", "bot/app.py"]
+Fix CMD to correct bot path
+
 
 
