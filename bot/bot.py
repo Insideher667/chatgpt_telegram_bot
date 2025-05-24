@@ -880,33 +880,32 @@ def run_bot() -> None:
     application.add_handler(CommandHandler("balance", show_balance_handle, filters=user_filter))
     # ... altri import e codice sopra
 
-from telegram.ext import ContextTypes
+from telegram.ext import (
+    ApplicationBuilder, CommandHandler, CallbackQueryHandler,
+    MessageHandler, filters, ContextTypes
+)
 
-# Funzione di gestione degli errori
-async def error_handle(update: object, context: ContextTypes.DEFAULT_TYPE):
+# Funzione per gestire gli errori
+async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
     try:
-        if update and hasattr(update, 'effective_chat') and update.effective_chat:
+        if update and hasattr(update, "effective_chat") and update.effective_chat:
             await context.bot.send_message(
-                update.effective_chat.id,
-                "⚠️ Si è verificato un errore."
+                chat_id=update.effective_chat.id,
+                text="⚠️ Si è verificato un errore."
             )
         else:
             print("⚠️ Errore: impossibile notificare l’utente perché update o effective_chat è None.")
     except Exception as e:
-        print(f"Errore nell’error handler: {e}")
+        print(f"Errore nell'error handler: {e}")
 
-# Funzione principale del bot
+# Funzione principale che avvia il bot
 def run_bot():
-    application.add_handler(CommandHandler("start", start_handle, filters=user_filter))
-    
-    
-    # Registra l'handler per gli errori
-    application.add_error_handler(error_handle)
-    
-    # Avvia il bot in modalità polling
+    application = ApplicationBuilder().token(config.telegram_token).build()
+    application.add_handler(CommandHandler("start", start_handle))
+    application.add_handler(CommandHandler("help", help_handle))
+    application.add_error_handler(error_handler)
     application.run_polling()
 
-# Avvia il bot e il server dummy per Render
 if __name__ == "__main__":
     run_bot()
 
