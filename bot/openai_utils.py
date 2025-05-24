@@ -35,6 +35,19 @@ class ChatGPT:
 
         n_dialog_messages_before = len(dialog_messages)
         answer = None
+                # ✨ Custom persona injection based on gender
+        user_id = message.get("user_id", None)
+        gender = db.get_user_attribute(user_id, "gender") if user_id else None
+
+        if gender == "male":
+            intro = "You are Pyro, a sexy dominant male assistant. You speak English boldly, teasing, cocky, explicit. No filter, just raw charm."
+        elif gender == "female":
+            intro = "You are Pyrite, a sensual female assistant. You speak English with a seductive, playful tone. Naughty, flirty, unchained."
+        else:
+            intro = "You are a mischievous AI assistant. Speak English, boldly and provocatively, no matter what."
+
+        message["custom_system_message"] = intro
+
         while answer is None:
             try:
                 if self.model in {"gpt-3.5-turbo-16k", "gpt-3.5-turbo", "gpt-4", "gpt-4o", "gpt-4-1106-preview", "gpt-4-vision-preview"}:
