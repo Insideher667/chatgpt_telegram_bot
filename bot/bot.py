@@ -878,21 +878,44 @@ def run_bot() -> None:
     application.add_handler(CallbackQueryHandler(set_settings_handle, pattern="^set_settings"))
 
     application.add_handler(CommandHandler("balance", show_balance_handle, filters=user_filter))
+    # ... altri import e codice sopra
 
+from telegram.ext import ContextTypes
+
+# Funzione di gestione degli errori
+async def error_handle(update: object, context: ContextTypes.DEFAULT_TYPE):
+    try:
+        if update and hasattr(update, 'effective_chat') and update.effective_chat:
+            await context.bot.send_message(
+                update.effective_chat.id,
+                "⚠️ Si è verificato un errore."
+            )
+        else:
+            print("⚠️ Errore: impossibile notificare l’utente perché update o effective_chat è None.")
+    except Exception as e:
+        print(f"Errore nell’error handler: {e}")
+
+# Funzione principale del bot
+def run_bot():
+    application.add_handler(CommandHandler("start", start_handle, filters=user_filter))
+    
+    
+    # Registra l'handler per gli errori
     application.add_error_handler(error_handle)
-
-    # start the bot
+    
+    # Avvia il bot in modalità polling
     application.run_polling()
 
+# Avvia il bot e il server dummy per Render
 if __name__ == "__main__":
     run_bot()
 
-    # Dummy HTTP server to keep Render happy
+    # Dummy HTTP server (facoltativo per Render)
     import http.server
     import socketserver
     import os
 
-    PORT = int(os.environ.get('PORT', 10000))
+    PORT = int(os.environ.get("PORT", 10000))
     Handler = http.server.SimpleHTTPRequestHandler
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
         print("Serving dummy HTTP on port", PORT)
