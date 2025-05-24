@@ -1,4 +1,5 @@
-telegram_token: "IL_TUO_TOKEN_TELEGRAM"
+telegram_token: "${TELEGRAM_BOT_TOKEN}"
+
 openai_api_key: "LA_TUA_OPENAI_KEY"
 openai_api_base: null
 allowed_telegram_usernames: []
