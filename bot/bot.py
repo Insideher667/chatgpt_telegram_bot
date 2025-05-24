@@ -894,4 +894,4 @@ application.run_polling()
 
 
 if __name__ == "__main__":
-run_bot()
+    run_bot()
