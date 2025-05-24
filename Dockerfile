@@ -20,7 +20,7 @@ COPY . /code
 WORKDIR /code
 
 CMD ["python3", "bot/app.py"]
-Fix CMD to correct bot path
+
 
 
 
