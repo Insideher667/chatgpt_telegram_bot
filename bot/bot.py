@@ -101,8 +101,9 @@ async def start_http_server():
 async def main():
     loop = asyncio.get_event_loop()
     bot_task = loop.run_in_executor(None, run_bot)
-    http_task = loop.run_in_executor(None, start_http_server)
+    http_task = start_http_server()  # è async, va awaitata direttamente
     await asyncio.gather(bot_task, http_task)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
