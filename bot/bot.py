@@ -45,6 +45,8 @@ logger = logging.getLogger(__name__)
 db = database.Database()
 
 # Placeholder per run_bot (da implementare sopra con handler)
+async def post_init(application):
+    print("Bot inizializzato correttamente.")
 def run_bot():
     application = (
         ApplicationBuilder()
