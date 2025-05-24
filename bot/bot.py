@@ -6,7 +6,7 @@ import html
 import json
 from datetime import datetime
 import openai
-
+import os
 import telegram
 from telegram import (
     Update,
@@ -924,11 +924,27 @@ async def main():
         start_http_server()   # avvia il server dummy HTTP
     )
 
-if __name__ == "__main__":
-    import nest_asyncio
-    import asyncio
+import http.server
+import socketserver
+import asyncio
+import nest_asyncio
 
-    nest_asyncio.apply()
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+nest_asyncio.apply()
+
+async def start_http_server():
+    PORT = int(os.environ.get("PORT", 10000))
+    Handler = http.server.SimpleHTTPRequestHandler
+    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+        print(f"Serving dummy HTTP on port {PORT}")
+        httpd.serve_forever()
+
+async def main():
+    # Avvia il bot Telegram
+    bot_task = asyncio.create_task(run_bot())
+    # Avvia il server HTTP dummy
+    http_task = asyncio.to_thread(start_http_server)
+    await asyncio.gather(bot_task, http_task)
+
+if __name__ == "__main__":
+    asyncio.get_event_loop().run_until_complete(main())
 
