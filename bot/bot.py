@@ -97,8 +97,9 @@ async def start_http_server():
 
 # Funzione principale che avvia il bot e il server HTTP
 async def main():
-    bot_task = asyncio.to_thread(run_bot)
-    http_task = asyncio.to_thread(start_http_server)
+    loop = asyncio.get_event_loop()
+    bot_task = loop.run_in_executor(None, run_bot)
+    http_task = loop.run_in_executor(None, start_http_server)
     await asyncio.gather(bot_task, http_task)
 
 if __name__ == "__main__":
