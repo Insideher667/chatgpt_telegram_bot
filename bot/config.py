@@ -33,3 +33,4 @@ with open(config_dir / "models.yml", 'r') as f:
 
 # files
 help_group_chat_video_path = Path(__file__).parent.parent.resolve() / "static" / "help_group_chat.mp4"
+MONGO_CONNECTION_STRING = "mongodb+srv://botuser:<Braccio001>@cluster0.qcfwzft.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
