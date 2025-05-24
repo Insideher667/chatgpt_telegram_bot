@@ -38,12 +38,6 @@ async def set_gender(update, context):
     db.set_user_attribute(user_id, "gender", gender)
     await update.message.reply_text(f"Got it. I'll talk to you as a {'man' if gender == 'male' else 'woman'} now 😘")
 
-application.add_handler(CommandHandler("start", start_handle, filters=user_filter))
-application.add_handler(CommandHandler("help", help_handle, filters=user_filter))
-application.add_handler(CommandHandler("help_group_chat", help_group_chat_handle, filters=user_filter))
-application.add_handler(CommandHandler("gender", set_gender, filters=user_filter))
-
-
 
 from telegram.constants import ParseMode, ChatAction
 
