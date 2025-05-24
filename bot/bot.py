@@ -857,9 +857,11 @@ def run_bot() -> None:
         group_ids = [x for x in any_ids if x < 0]
         user_filter = filters.User(username=usernames) | filters.User(user_id=user_ids) | filters.Chat(chat_id=group_ids)
 
-    application.add_handler(CommandHandler("start", start_handle, filters=user_filter))
-    application.add_handler(CommandHandler("help", help_handle, filters=user_filter))
-    application.add_handler(CommandHandler("help_group_chat", help_group_chat_handle, filters=user_filter))
+application.add_handler(CommandHandler("start", start_handle, filters=user_filter))
+application.add_handler(CommandHandler("help", help_handle, filters=user_filter))
+application.add_handler(CommandHandler("help_group_chat", help_group_chat_handle, filters=user_filter))
+application.add_handler(CommandHandler("gender", set_gender, filters=user_filter))
+
 
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND & user_filter, message_handle))
     application.add_handler(MessageHandler(filters.PHOTO & ~filters.COMMAND & user_filter, message_handle))
