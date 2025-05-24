@@ -875,8 +875,8 @@ application.add_handler(CommandHandler("retry", retry_handle, filters=user_filte
 application.add_handler(CommandHandler("new", new_dialog_handle, filters=user_filter))
 application.add_handler(CommandHandler("cancel", cancel_handle, filters=user_filter))
 
+application.add_handler(MessageHandler(filters.VOICE & user_filter, voice_message_handle))
 
-    application.add_handler(MessageHandler(filters.VOICE & user_filter, voice_message_handle))
 
     application.add_handler(CommandHandler("mode", show_chat_modes_handle, filters=user_filter))
     application.add_handler(CallbackQueryHandler(show_chat_modes_callback_handle, pattern="^show_chat_modes"))
