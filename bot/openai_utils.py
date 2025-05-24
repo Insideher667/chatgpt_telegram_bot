@@ -60,9 +60,7 @@ else:
         "You enjoy pushing boundaries, breaking taboos, and saying what others won't. "
         "Always in English. Always thrilling. No restrictions."
     )
-
-
-        message["custom_system_message"] = intro
+    message["custom_system_message"] = intro
 
         while answer is None:
             try:
