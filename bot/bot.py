@@ -890,8 +890,8 @@ application.add_handler(CommandHandler("balance", show_balance_handle, filters=u
 application.add_error_handler(error_handle)
 
     # start the bot
-    application.run_polling()
+application.run_polling()
 
 
 if __name__ == "__main__":
-    run_bot()
+run_bot()
