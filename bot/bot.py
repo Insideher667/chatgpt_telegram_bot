@@ -907,9 +907,12 @@ def run_bot():
     application.run_polling()
 
 if __name__ == "__main__":
-    run_bot()
+    import threading
 
-    # Dummy HTTP server (facoltativo per Render)
+    # Avvia il bot in un thread separato
+    threading.Thread(target=run_bot).start()
+
+    # Dummy HTTP server per Render
     import http.server
     import socketserver
     import os
@@ -919,3 +922,4 @@ if __name__ == "__main__":
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
         print("Serving dummy HTTP on port", PORT)
         httpd.serve_forever()
+
