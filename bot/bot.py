@@ -4,7 +4,7 @@ import asyncio
 import traceback
 import html
 import json
-from datetime import datetime
+from datetime 
 import openai
 import telegram
 from telegram import (
@@ -905,12 +905,71 @@ def run_bot():
     application.add_error_handler(error_handler)
     application.run_polling()
 
-import asyncio
-import os
 import http.server
+import os
 import socketserver
 import nest_asyncio
 
+from telegram.ext import (
+    ApplicationBuilder, CommandHandler, CallbackQueryHandler,
+    MessageHandler, filters, ContextTypes
+)
+
+# Importa tutte le tue funzioni e handler qui sopra
+# from your_module import *
+
+from bot_logic import (  # supponendo siano definite nel file bot_logic.py
+    start_handle, help_handle, help_group_chat_handle, set_gender,
+    message_handle, retry_handle, new_dialog_handle, cancel_handle,
+    show_chat_modes_handle, show_chat_modes_callback_handle,
+    set_chat_mode_handle, settings_handle, set_settings_handle,
+    show_balance_handle, voice_message_handle, unsupport_message_handle,
+    error_handler
+)
+
+def run_bot():
+    application = (
+        ApplicationBuilder()
+        .token(config.telegram_token)
+        .concurrent_updates(True)
+        .rate_limiter(AIORateLimiter(max_retries=5))
+        .http_version("1.1")
+        .get_updates_http_version("1.1")
+        .post_init(post_init)
+        .build()
+    )
+
+    user_filter = filters.ALL
+    if len(config.allowed_telegram_usernames) > 0:
+        usernames = [x for x in config.allowed_telegram_usernames if isinstance(x, str)]
+        any_ids = [x for x in config.allowed_telegram_usernames if isinstance(x, int)]
+        user_ids = [x for x in any_ids if x > 0]
+        group_ids = [x for x in any_ids if x < 0]
+        user_filter = filters.User(username=usernames) | filters.User(user_id=user_ids) | filters.Chat(chat_id=group_ids)
+
+    application.add_handler(CommandHandler("start", start_handle, filters=user_filter))
+    application.add_handler(CommandHandler("help", help_handle, filters=user_filter))
+    application.add_handler(CommandHandler("help_group_chat", help_group_chat_handle, filters=user_filter))
+    application.add_handler(CommandHandler("gender", set_gender, filters=user_filter))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND & user_filter, message_handle))
+    application.add_handler(MessageHandler(filters.PHOTO & ~filters.COMMAND & user_filter, message_handle))
+    application.add_handler(MessageHandler(filters.VIDEO & ~filters.COMMAND & user_filter, unsupport_message_handle))
+    application.add_handler(MessageHandler(filters.Document.ALL & ~filters.COMMAND & user_filter, unsupport_message_handle))
+    application.add_handler(CommandHandler("retry", retry_handle, filters=user_filter))
+    application.add_handler(CommandHandler("new", new_dialog_handle, filters=user_filter))
+    application.add_handler(CommandHandler("cancel", cancel_handle, filters=user_filter))
+    application.add_handler(MessageHandler(filters.VOICE & user_filter, voice_message_handle))
+    application.add_handler(CommandHandler("mode", show_chat_modes_handle, filters=user_filter))
+    application.add_handler(CallbackQueryHandler(show_chat_modes_callback_handle, pattern="^show_chat_modes"))
+    application.add_handler(CallbackQueryHandler(set_chat_mode_handle, pattern="^set_chat_mode"))
+    application.add_handler(CommandHandler("settings", settings_handle, filters=user_filter))
+    application.add_handler(CallbackQueryHandler(set_settings_handle, pattern="^set_settings"))
+    application.add_handler(CommandHandler("balance", show_balance_handle, filters=user_filter))
+    application.add_error_handler(error_handler)
+
+    application.run_polling()
+
+# Dummy HTTP server per Render
 nest_asyncio.apply()
 
 async def start_http_server():
@@ -921,12 +980,9 @@ async def start_http_server():
         httpd.serve_forever()
 
 async def main():
-    # Avvia il bot Telegram
-    bot_task = asyncio.create_task(run_bot())
-    # Avvia il server HTTP dummy
+    bot_task = asyncio.to_thread(run_bot)
     http_task = asyncio.to_thread(start_http_server)
     await asyncio.gather(bot_task, http_task)
 
 if __name__ == "__main__":
-    asyncio.get_event_loop().run_until_complete(main())
-
+    asyncio.run(main())
