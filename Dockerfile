@@ -19,7 +19,7 @@ RUN pip3 install -r /tmp/requirements.txt && rm -r /tmp/requirements.txt
 COPY . /code
 WORKDIR /code
 
-CMD ["python3", "bot/main.py"]
+CMD ["python3", "bot/chatgpt_telegram_bot.py"]
 
 
 
